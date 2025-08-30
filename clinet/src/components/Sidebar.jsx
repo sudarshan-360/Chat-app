@@ -31,6 +31,15 @@ const Sidebar = ({selectedUser, setSelectedUser, sidebarOpen, setSidebarOpen}) =
     }
   }
 
+  const handleLogout = () => {
+    // Clear any stored user data or tokens here if needed
+    // localStorage.removeItem('authToken') // Example
+    navigate('/login')
+    if (window.innerWidth < 1024) {
+      setSidebarOpen(false)
+    }
+  }
+
   return (
     <div className="bg-white/10 backdrop-blur-sm border-r border-gray-600 h-full flex flex-col font-['Poppins'] w-full">
       {/* Header with Logo and Menu */}
@@ -122,9 +131,10 @@ const Sidebar = ({selectedUser, setSelectedUser, sidebarOpen, setSidebarOpen}) =
       
       {/* Profile Section */}
       <div className="p-3 sm:p-4 border-t border-gray-600">
+        {/* Profile Link */}
         <div 
           onClick={handleProfileClick}
-          className="flex items-center gap-3 p-2 sm:p-3 rounded-lg cursor-pointer hover:bg-white/10 transition-colors"
+          className="flex items-center gap-3 p-2 sm:p-3 rounded-lg cursor-pointer hover:bg-white/10 transition-colors mb-2"
         >
           <img 
             src={assets.profile_pic} 
@@ -136,6 +146,25 @@ const Sidebar = ({selectedUser, setSelectedUser, sidebarOpen, setSidebarOpen}) =
             <p className="text-gray-400 text-xs sm:text-sm truncate">View and edit profile</p>
           </div>
           <svg className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+        
+        {/* Logout Button */}
+        <div 
+          onClick={handleLogout}
+          className="flex items-center gap-3 p-2 sm:p-3 rounded-lg cursor-pointer hover:bg-red-500/20 transition-colors group"
+        >
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-red-500/20 flex items-center justify-center border-2 border-red-500/30">
+            <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-red-400 group-hover:text-red-300 font-medium text-sm sm:text-base truncate">Logout</h3>
+            <p className="text-red-400/70 group-hover:text-red-300/70 text-xs sm:text-sm truncate">Sign out of your account</p>
+          </div>
+          <svg className="w-4 h-4 sm:w-5 sm:h-5 text-red-400 group-hover:text-red-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
