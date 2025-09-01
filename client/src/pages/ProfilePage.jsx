@@ -1,19 +1,40 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import toast from "react-hot-toast";
 import assets from "../assets/assets";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const { user, updateProfile } = useAuth();
   const fileInputRef = useRef(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [profilePicture, setProfilePicture] = useState(assets.profile_martin);
+  const [isLoading, setIsLoading] = useState(false);
+  const [profilePicture, setProfilePicture] = useState("");
   const [profileData, setProfileData] = useState({
-    fullName: "John Doe",
-    email: "john.doe@quickchat.com",
-    bio: "Hi Everyone, I am using QuickChat!",
-    phone: "+1 (555) 123-4567",
+    fullName: "",
+    email: "",
+    bio: "",
+    phone: "",
     status: "Available"
   });
+  const [originalData, setOriginalData] = useState({});
+
+  // Initialize profile data from user context
+  useEffect(() => {
+    if (user) {
+      const userData = {
+        fullName: user.fullName || "",
+        email: user.email || "",
+        bio: user.bio || "",
+        phone: user.phone || "",
+        status: user.status || "Available"
+      };
+      setProfileData(userData);
+      setOriginalData(userData);
+      setProfilePicture(user.profilePicture || "");
+    }
+  }, [user]);
 
   const handleInputChange = (field, value) => {
     setProfileData(prev => ({
@@ -50,18 +71,50 @@ const ProfilePage = () => {
     }
   };
 
-  const handleSave = () => {
-    setIsEditing(false);
-    // Here you would typically save to backend
-    console.log("Profile updated:", profileData);
-    console.log("Profile picture:", profilePicture);
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      
+      const updateData = {
+        ...profileData,
+        profilePicture: profilePicture
+      };
+      
+      const result = await updateProfile(updateData);
+      
+      if (result.success) {
+        toast.success("Profile updated successfully!");
+        setIsEditing(false);
+        setOriginalData(profileData);
+      } else {
+        toast.error(result.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast.error("Failed to update profile. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    // Reset to original data if needed
-    setProfilePicture(assets.profile_martin);
+    // Reset to original data
+    setProfileData(originalData);
+    setProfilePicture(user?.profilePicture || "");
   };
+
+  // Show loading spinner while user data is being fetched
+  if (!user) {
+    return (
+      <div className="w-full h-screen overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-white">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full h-screen overflow-hidden">
@@ -92,9 +145,13 @@ const ProfilePage = () => {
                   </button>
                   <button 
                     onClick={handleSave}
-                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                    disabled={isLoading}
+                    className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed text-white rounded-lg transition-colors flex items-center gap-2"
                   >
-                    Save Changes
+                    {isLoading && (
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                    )}
+                    {isLoading ? "Saving..." : "Save Changes"}
                   </button>
                 </>
               ) : (
@@ -131,7 +188,7 @@ const ProfilePage = () => {
                   <div className="text-center">
                     <div className="relative inline-block mb-4 group">
                       <img 
-                        src={profilePicture} 
+                        src={profilePicture || assets.avatar_icon} 
                         alt="Profile" 
                         className="w-32 h-32 rounded-full object-cover border-4 border-gray-600 mx-auto transition-all duration-200 group-hover:brightness-75"
                       />

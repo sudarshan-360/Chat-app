@@ -1,13 +1,26 @@
-import express from 'express';
-// Fix import path
-import { signup, login, checkAuth, updateProfile } from '../controllers/userController.js';
-import protectRoute from '../middleware/auth.js'; // Fix: should be auth.js, not protectRoute
+// server/routes/userRoutes.js
+import express from "express";
+import { register, login, checkAuth, updateProfile, getUsers, getUserProfile } from "../controllers/userController.js";
+import { protectRoute } from "../middleware/auth.js";
 
-const userRouter = express.Router();
+const router = express.Router();
 
-userRouter.post('/signup', signup);
-userRouter.post('/login', login);
-userRouter.get('/check-auth', protectRoute, checkAuth);
-userRouter.put('/update-profile', protectRoute, updateProfile);
+// POST /api/users/:state  (frontend calls with 'login' or 'register')
+router.post("/register", register);
+router.post("/signup", register); // Add signup route that uses register controller
+router.post("/login", login);
 
-export default userRouter;
+// Convenience: accept /api/users/:state pattern (login/register)
+router.post("/:state", (req, res, next) => {
+  const state = req.params.state;
+  if (state === "login") return login(req, res, next);
+  if (state === "register") return register(req, res, next);
+  return res.status(404).json({ success: false, message: "Not found" });
+});
+
+router.get("/check-auth", checkAuth);
+router.get("/", protectRoute, getUsers);
+router.get("/profile/:userId", protectRoute, getUserProfile);
+router.put("/update", protectRoute, updateProfile);
+
+export default router;

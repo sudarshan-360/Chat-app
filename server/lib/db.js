@@ -1,17 +1,14 @@
-import mongoose from 'mongoose';
+// server/lib/db.js
+import mongoose from "mongoose";
 
-//connection to mongo DB
-const connectDB = async () => {
+export const connectDB = async (mongoUri) => {
   try {
-    mongoose.connection.on('connected', () => {
-      console.log('MongoDB connected');
+    await mongoose.connect(mongoUri, {
+      // options are set automatically in mongoose 7+
     });
-    await mongoose.connect(`${process.env.MONGODB_URI}/chat-app`);
-    
-  } catch (error) {
-    console.error('MongoDB connection failed:', error);
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
     process.exit(1);
   }
 };
-
-export default connectDB;
