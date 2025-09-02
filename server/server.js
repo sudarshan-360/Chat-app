@@ -211,13 +211,12 @@ connectDB(process.env.MONGODB_URI).then(() => {
     }
   });
 
-  // After socket initialized, start HTTP server only in development
-  // In production (Vercel), the serverless functions handle requests
-  if (process.env.NODE_ENV !== "production") {
-    server.listen(PORT, () => {
-      console.log(`Server listening on port ${PORT}`);
-    });
-  }
+  // Start HTTP server
+  // For Vercel, this won't be called due to serverless architecture
+  // For Render and other platforms, this is needed
+  server.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
+  });
 });
 
 // Export server for Vercel
