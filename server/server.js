@@ -19,7 +19,7 @@ import userRoutes from "./routes/userRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import authRoutes from "./routes/authRoutes.js";
 import { protectRoute } from "./middleware/auth.js";
-import Message from "./models/Message.js";
+import Message from "./models/message.js"; // Changed from Message.js to message.js
 import User from "./models/User.js";
 import { initSocket } from "./lib/socket.js";
 import passport from "./lib/passport.js";

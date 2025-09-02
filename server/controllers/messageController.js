@@ -1,5 +1,5 @@
 // server/controllers/messageController.js
-import Message from "../models/Message.js";
+import Message from "../models/message.js";
 import User from "../models/User.js";
 import { uploadImageFromData, deleteImageFromUrl } from "../lib/cloudinary.js";
 import { getIO, emitToUser } from "../lib/socket.js";
