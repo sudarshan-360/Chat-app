@@ -64,6 +64,7 @@ app.get("/", (req, res) => {
     status: "running",
     endpoints: {
       health: "/api/health",
+      status: "/api/status",
       auth: "/api/auth",
       users: "/api/users",
       messages: "/api/messages"
@@ -73,6 +74,16 @@ app.get("/", (req, res) => {
 
 // Health route
 app.get("/api/health", (req, res) => res.json({ ok: true }));
+
+// Status route
+app.get("/api/status", (req, res) => {
+  res.json({
+    status: "running",
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || "development",
+    version: "1.0.0"
+  });
+});
 
 // Connect DB then start server
 connectDB(process.env.MONGODB_URI).then(() => {
