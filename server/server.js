@@ -57,6 +57,20 @@ app.use("/api/users", userRoutes);
 app.use("/api/auth", authRoutes); // Google OAuth and regular auth routes
 app.use("/api/messages", messageRoutes);
 
+// Root route
+app.get("/", (req, res) => {
+  res.json({ 
+    message: "Chat App Backend API", 
+    status: "running",
+    endpoints: {
+      health: "/api/health",
+      auth: "/api/auth",
+      users: "/api/users",
+      messages: "/api/messages"
+    }
+  });
+});
+
 // Health route
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
